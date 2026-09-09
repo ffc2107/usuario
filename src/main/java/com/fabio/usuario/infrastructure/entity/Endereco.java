@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,6 +19,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "endereco")
+@Builder
 public class Endereco {
 
     @Id
@@ -26,7 +28,7 @@ public class Endereco {
     @Column(name = "rua")
     private String rua;
     @Column(name = "numero")
-    private String numero;
+    private Long numero;
     @Column(name = "complemento", length = 10)
     private String complemento;
     @Column(name = "cidade", length = 150)
