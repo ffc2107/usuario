@@ -14,7 +14,7 @@ import java.util.List;
 @Component
 public class UsuarioConverter {
 
-    public Usuario paraUsuario(UsuarioDTO  usuarioDTO) {
+    public Usuario paraUsuario(UsuarioDTO usuarioDTO) {
 
         return Usuario.builder()
                 .nome(usuarioDTO.getNome())
@@ -23,6 +23,16 @@ public class UsuarioConverter {
                 .enderecos(paraListaEndereco(usuarioDTO.getEnderecos()))
                 .telefones(paraListaTelefone(usuarioDTO.getTelefones()))
                 .build();
+
+        //ou
+        /*Usuario usuario = new Usuario();
+        usuario.setNome(usuarioDTO.getNome());
+        usuario.setEmail(usuarioDTO.getEmail());
+        usuario.setSenha(usuarioDTO.getSenha());
+        usuario.setEnderecos(paraListaEndereco(usuarioDTO.getEnderecos()));
+        usuario.setTelefones(paraListaTelefone(usuarioDTO.getTelefones()));
+
+        return usuario;*/
     }
 
     public List<Endereco> paraListaEndereco(List<EnderecoDTO> enderecosDTOS){
@@ -71,7 +81,7 @@ public class UsuarioConverter {
 
 
 
-    public UsuarioDTO paraUsuarioDTO(Usuario  usuarioDTO) {
+    public UsuarioDTO paraUsuarioDTO(Usuario usuarioDTO) {
 
         return UsuarioDTO.builder()
                 .nome(usuarioDTO.getNome())
@@ -80,6 +90,15 @@ public class UsuarioConverter {
                 .enderecos(paraListaEnderecoDTO(usuarioDTO.getEnderecos()))
                 .telefones(paraListaTelefoneDTO(usuarioDTO.getTelefones()))
                 .build();
+
+        //ou
+        /*UsuarioDTO usuarioDTO2 = new UsuarioDTO();
+        usuarioDTO2.setNome(usuarioDTO.getNome());
+        usuarioDTO2.setEmail(usuarioDTO.getEmail());
+        usuarioDTO2.setSenha(usuarioDTO.getSenha());
+        usuarioDTO2.setEnderecos(paraListaEnderecoDTO(usuarioDTO.getEnderecos()));
+        usuarioDTO2.setTelefones(paraListaTelefoneDTO(usuarioDTO.getTelefones()));
+        return usuarioDTO2;*/
     }
 
     public List<EnderecoDTO> paraListaEnderecoDTO(List<Endereco> enderecosDTOS){
