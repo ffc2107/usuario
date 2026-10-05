@@ -6,8 +6,8 @@ import com.fabio.usuario.infrastructure.entity.Usuario;
 import com.fabio.usuario.infrastructure.exceptions.ConflictException;
 import com.fabio.usuario.infrastructure.exceptions.ResourceNotFoundException;
 import com.fabio.usuario.infrastructure.repository.UsuarioRepository;
+import com.fabio.usuario.infrastructure.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +19,7 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioConverter usuarioConverter;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
     public UsuarioDTO salvarUsuario(UsuarioDTO usuarioDTO){
         emailExiste(usuarioDTO.getEmail());
@@ -55,5 +56,23 @@ public class UsuarioService {
 
     public void deleteUsuarioPorEmail(String email) {
         usuarioRepository.deleteByEmail(email);
+    }
+
+    public UsuarioDTO atualizarDadosUsuario(String token, UsuarioDTO usuarioDTO) {
+        //Aqui buscamos o email do usuário através do token (tirar a obrigatoriedade do email)
+        String email = jwtUtil.extrairEmailToken(token.substring(7));
+
+        //Criptogradia de senha
+        usuarioDTO.setSenha(usuarioDTO.getSenha() != null ? passwordEncoder.encode(usuarioDTO.getSenha()) : null);
+
+        //Busca os dados do usuário no banco de dados
+        Usuario usuarioEntity = usuarioRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Email não localizado"));
+
+        //Mesclou os dados que recebemos da requesição DTO dos dados do banco de dados
+        Usuario usuario = usuarioConverter.updateUsuario(usuarioDTO, usuarioEntity);
+
+        //Salvou os dados do usuário convertido e depois pegou o retorno e converteu para UsuarioDTO
+        return usuarioConverter.paraUsuarioDTO(usuarioRepository.save(usuario));
+
     }
 }
