@@ -29,7 +29,7 @@ public class UsuarioService {
     private final EnderecoRepository enderecoRepository;
     private final TelefoneRepository telefoneRepository;
 
-    public UsuarioDTO salvarUsuario(UsuarioDTO usuarioDTO){
+    public UsuarioDTO salvarUsuario(UsuarioDTO usuarioDTO) {
         emailExiste(usuarioDTO.getEmail());
         usuarioDTO.setSenha(passwordEncoder.encode(usuarioDTO.getSenha()));
         Usuario usuario = usuarioConverter.paraUsuario(usuarioDTO);
@@ -92,7 +92,6 @@ public class UsuarioService {
     }
 
     public EnderecoDTO atualizaEndereco(Long idEndereco, EnderecoDTO enderecoDTO) {
-
         Endereco enderecoEntity = enderecoRepository.findById(idEndereco).orElseThrow(() -> new ResourceNotFoundException("ID não encontrado " + idEndereco));
 
         Endereco endereco = usuarioConverter.updateEndereco(enderecoDTO, enderecoEntity);
@@ -104,7 +103,33 @@ public class UsuarioService {
         Telefone telefoneEntity = telefoneRepository.findById(idTelefone).orElseThrow(() -> new ResourceNotFoundException("Telefone não encontrado " + idTelefone));
 
         Telefone telefone = usuarioConverter.updateTelefone(telefoneDTO, telefoneEntity);
-
         return usuarioConverter.paraTelefoneDTO(telefoneRepository.save(telefone));
+    }
+
+    public EnderecoDTO castradaEndereco(String token, EnderecoDTO enderecoDTO) {
+        String email = jwtUtil.extrairEmailToken(token.substring(7));
+        Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Email não encontrado" + email));
+
+        Endereco endereco = usuarioConverter.paraEnderecoEntity(enderecoDTO, usuario.getId());
+        return usuarioConverter.paraEnderecoDTO(enderecoRepository.save(endereco));
+
+//        ou
+        /*Endereco endereco = usuarioConverter.paraEnderecoEntity(enderecoDTO, usuario.getId());
+        Endereco enderecoEntity = enderecoRepository.save(endereco);
+        return usuarioConverter.paraEnderecoDTO(enderecoEntity);*/
+    }
+
+    public TelefoneDTO castradaTelefone(String token, TelefoneDTO telefoneDTO) {
+        String email = jwtUtil.extrairEmailToken(token.substring(7));
+        Usuario usuario = usuarioRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Email não encontrado" + email));
+
+        Telefone telefone = usuarioConverter.paraTelefoneEntity(telefoneDTO, usuario.getId());
+        return usuarioConverter.paraTelefoneDTO(telefoneRepository.save(telefone));
+
+        //ou
+        /*Telefone telefone = usuarioConverter.paraTelefoneEntity(telefoneDTO, usuario.getId());
+        Telefone telefoneEntity = telefoneRepository.save(telefone);
+        return usuarioConverter.paraTelefoneDTO(telefoneEntity);*/
+
     }
 }
